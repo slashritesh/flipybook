@@ -7,10 +7,13 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-const Pages = React.forwardRef(({ number, children }, ref) => {
+const PAGE_WIDTH = 400; // Ensure this matches FlipBook width
+const PAGE_HEIGHT = 518; // Adjust for proper aspect ratio
+
+const Pages = React.forwardRef(({ pageNumber }, ref) => {
   return (
-    <div ref={ref} className="demoPage flex flex-col items-center bg-white shadow-lg p-4">
-      {children}
+    <div ref={ref} className="relative flex items-center bg-white shadow-md ">
+      <Page pageNumber={pageNumber} width={PAGE_WIDTH} />
     </div>
   );
 });
@@ -19,66 +22,77 @@ Pages.displayName = "Pages";
 
 export default function MyBook() {
   const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pagesPerView, setPagesPerView] = useState(2); // Default: 2 pages for large screens
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const bookRef = useRef();
+
+  useEffect(() => {
+    const handleResize = () => {
+      console.log(isMobile);
+
+      setIsMobile(window.innerWidth < 668);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [window.innerWidth]);
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
 
-  // Detect screen size and update layout
-  useEffect(() => {
-    const updateLayout = () => {
-      setPagesPerView(window.innerWidth < 768 ? 1 : 2);
-    };
-
-    updateLayout(); // Initial check
-    window.addEventListener("resize", updateLayout);
-    
-    return () => window.removeEventListener("resize", updateLayout);
-  }, []);
+  const handlePageFlip = (e) => {
+    setCurrentPage(e.data);
+  };
 
   return (
-    <div className="flex w-full h-full p-10">
-      <Document file="demo.pdf" onLoadSuccess={onDocumentLoadSuccess}>
-        {numPages && (
-          <HTMLFlipBook
-            ref={bookRef}
-            width={800}
-            height={800}
-            size="stretch"
-            minWidth={315}
-            maxWidth={600}
-            minHeight={400}
-            maxHeight={700}
-            showCover={true}
-            flippingTime={700}
-            mobileScrollSupport={true}
-            drawShadow={true}
-            className="shadow-2xl h-fit rounded-lg border border-gray-300"
-            startPage={0}
-            maxShadowOpacity={0.5}
-            usePortrait={false}
-            startZIndex={1}
-            clickEventForward={true}
-            useMouseEvents={true}
-            pagesPerView={pagesPerView} // Set dynamically based on screen width
-          >
-            {[...Array(numPages)].map((_, index) => (
-              <Pages key={index} number={index + 1}>
-                <Page pageNumber={index + 1} width={350} />
-              </Pages>
-            ))}
-          </HTMLFlipBook>
-        )}
-      </Document>
+    <div className="flex justify-center items-center h-screen bg-gray-100 p-2 sm:p-4 overflow-hidden">
+      <div className="relative border h-fit flex justify-center ">
+        <Document
+          file="demo.pdf"
+          onLoadSuccess={onDocumentLoadSuccess}
+          loading={
+            <div className="flex justify-center items-center h-96">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+          }
+        >
+          {numPages && (
+            <HTMLFlipBook
+              ref={bookRef}
+              width={PAGE_WIDTH} // Two pages in a row
+              height={PAGE_HEIGHT}
+              size="fixed"
+              minWidth={400}
+              maxWidth={PAGE_WIDTH}
+              minHeight={500}
+              maxHeight={PAGE_HEIGHT}
+              showCover={false}
+              flippingTime={1000}
+              className="shadow-2xl bg-red-200"
+              startPage={0}
+              drawShadow={true}
+              usePortrait={isMobile}
+              startZIndex={1}
+              autoSize={true}
+              mobileScrollSupport={true}
+              onFlip={handlePageFlip}
+            >
+              {Array.from(new Array(numPages), (el, index) => (
+                <Pages key={index} pageNumber={index + 1} />
+              ))}
+            </HTMLFlipBook>
+          )}
+        </Document>
 
-      {numPages && (
-        <p className="absolute bottom-5 text-gray-600">
-          Page {pageNumber} of {numPages}
-        </p>
-      )}
+        {/* {numPages && (
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white/80 px-3 py-1 rounded-full shadow-md text-sm">
+            <p className="text-gray-700">
+              Page {currentPage + 1} of {numPages}
+            </p>
+          </div>
+        )} */}
+      </div>
     </div>
   );
 }
