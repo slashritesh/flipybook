@@ -46,10 +46,10 @@ export default function MyBook() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100 p-2 sm:p-4 overflow-hidden">
+    <div className="flex justify-center items-center h-screen my-20 p-2 sm:p-4 overflow-hidden">
       <div className="relative border h-fit flex justify-center ">
         <Document
-          file="demo.pdf"
+          file="/pdf/demo.pdf"
           onLoadSuccess={onDocumentLoadSuccess}
           loading={
             <div className="flex justify-center items-center h-96">

@@ -4,10 +4,14 @@ import { useState, useCallback } from "react"
 import { useDropzone } from "react-dropzone"
 import { Upload, CheckCircle, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+
 
 export default function FileUpload() {
   const [file, setFile] = useState(null)
-  const [uploadStatus, setUploadStatus] = useState("idle")
+  const [uploadStatus, setUploadStatus] = useState()
+
+  const router = useRouter()
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 0) {
@@ -25,29 +29,42 @@ export default function FileUpload() {
   })
 
   const handleUpload = async () => {
-    if (!file) return
+    if (!file) return;
+  
+    setUploadStatus("uploading");
+  
+    const formData = new FormData();
+    formData.append("file", file);
 
-    setUploadStatus("uploading")
-
-    const formData = new FormData()
-    formData.append("file", file)
-
+    console.log(file);
+    
+  
     try {
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
-      })
+      });
 
+      console.log(response);
+      
+  
       if (response.ok) {
-        setUploadStatus("success")
-      } else {
-        setUploadStatus("error")
+        setUploadStatus("success");
+
+        console.log("workinggggg");
+        
       }
+
+      router.push("/preview")
+      
+
     } catch (error) {
-      console.error("Upload error:", error)
-      setUploadStatus("error")
+      console.error("Upload error:", error);
+      
     }
-  }
+  };
+  
+  
 
   return (
     <div className="w-full max-w-md">
