@@ -1,24 +1,23 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { useDropzone } from "react-dropzone"
-import { Upload, CheckCircle, XCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-
+import { useState, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
+import { Upload, CheckCircle, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function FileUpload() {
-  const [file, setFile] = useState(null)
-  const [uploadStatus, setUploadStatus] = useState()
+  const [file, setFile] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState();
 
-  const router = useRouter()
+  const router = useRouter();
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 0) {
-      setFile(acceptedFiles[0])
-      setUploadStatus("idle")
+      setFile(acceptedFiles[0]);
+      setUploadStatus("idle");
     }
-  }, [])
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -26,19 +25,18 @@ export default function FileUpload() {
       "application/pdf": [".pdf"],
     },
     maxFiles: 1,
-  })
+  });
 
   const handleUpload = async () => {
     if (!file) return;
-  
+
     setUploadStatus("uploading");
-  
+
     const formData = new FormData();
     formData.append("file", file);
 
     console.log(file);
-    
-  
+
     try {
       const response = await fetch("/api/upload", {
         method: "POST",
@@ -46,25 +44,18 @@ export default function FileUpload() {
       });
 
       console.log(response);
-      
-  
+
       if (response.ok) {
         setUploadStatus("success");
 
         console.log("workinggggg");
-        
       }
 
-      router.push("/preview")
-      
-
+      router.push("/preview");
     } catch (error) {
       console.error("Upload error:", error);
-      
     }
   };
-  
-  
 
   return (
     <div className="w-full max-w-md">
@@ -77,13 +68,21 @@ export default function FileUpload() {
         <input {...getInputProps()} />
         <Upload className="mx-auto h-12 w-12 text-gray-400" />
         {file ? (
-          <p className="mt-2 text-sm text-gray-500">File selected: {file.name}</p>
+          <p className="mt-2 text-sm text-gray-500">
+            File selected: {file.name}
+          </p>
         ) : (
-          <p className="mt-2 text-sm text-gray-500">Drag & drop your PDF here, or click to select a file</p>
+          <p className="mt-2 text-sm text-gray-500">
+            Drag & drop your PDF here, or click to select a file
+          </p>
         )}
       </div>
       {file && (
-        <Button onClick={handleUpload} disabled={uploadStatus === "uploading"} className="mt-4 w-full">
+        <Button
+          onClick={handleUpload}
+          disabled={uploadStatus === "uploading"}
+          className="mt-4 w-full"
+        >
           {uploadStatus === "uploading" ? "Uploading..." : "Upload File"}
         </Button>
       )}
@@ -94,10 +93,10 @@ export default function FileUpload() {
       )}
       {uploadStatus === "error" && (
         <p className="mt-2 text-sm text-red-500 flex items-center justify-center">
-          <XCircle className="mr-2" size={16} /> Upload failed. Please try again.
+          <XCircle className="mr-2" size={16} /> Upload failed. Please try
+          again.
         </p>
       )}
     </div>
-  )
+  );
 }
-

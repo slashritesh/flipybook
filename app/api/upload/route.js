@@ -1,47 +1,39 @@
-import fs from "fs";
-import path from "path";
 import { NextResponse } from "next/server";
+import { ID } from "node-appwrite";
+import { createAdminClient } from "@/config/appwrite";
+import { appwrite } from "@/config";
 
 export async function POST(req) {
   try {
-    // 1. Read the file from the request body
-    const data = await req.formData();
-    const file = data.get("file"); // Get the file object from FormData
+    const { storage } = createAdminClient();
+    const { buckets } = appwrite;
 
-    console.log(file);
-    
+    // Read file from request
+    const data = await req.formData();
+    const file = data.get("file");
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // 2. Convert file stream to a buffer
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Upload file to Appwrite storage
+    const response = await storage.createFile(buckets.pdfs, ID.unique(), file);
 
-    // 3. Define the upload directory (public/pdf)
-    const uploadDir = path.join(process.cwd(), "public/pdf");
+    const url = await storage.getFilePreview(buckets.pdfs,response.$id)
 
-    // 4. Ensure the directory exists
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    // 5. Clear existing files in the directory
-    fs.readdirSync(uploadDir).forEach((file) => {
-      fs.unlinkSync(path.join(uploadDir, file));
-    });
-
-    // 6. Save the file as demo.pdf in the public/pdf directory
-    const filePath = path.join(uploadDir, "demo.pdf");
-    fs.writeFileSync(filePath, buffer);
-
-    console.log("done");
+    console.log("file url : ",url.byteLength);
     
 
-    return NextResponse.json({ message: "File uploaded successfully" }, { status: 200 });
+    console.log("File uploaded successfully:", response);
+    return NextResponse.json(
+      { message: "File uploaded successfully", fileId: response.$id },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("Upload error:", error);
-    return NextResponse.json({ error: "File upload failed" }, { status: 500 });
+    console.error("Upload error:", error.message);
+    return NextResponse.json(
+      { error: "File upload failed", details: error.message },
+      { status: 500 }
+    );
   }
 }
