@@ -2,7 +2,7 @@
 import { appwrite } from '@/config'
 import { createAdminClient } from '@/config/appwrite'
 import {getKindeServerSession} from '@kinde-oss/kinde-auth-nextjs/server'
-import { redirect } from 'next/navigation'
+
 
 
 export const getAllProjects = async ()=>{
@@ -17,7 +17,7 @@ export const getAllProjects = async ()=>{
 
         const res = await databases.listDocuments(databaseID,collectionID,[])
 
-        console.log(res);
+        return res
         
 
     } catch (error) {

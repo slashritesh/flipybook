@@ -3,7 +3,7 @@ import FileUpload from '@/components/FileUpload'
 import React from 'react'
 
 const DashboardPage = async () => {
-  const data = await getAllProjects()
+  
   return (
     <main className='mx-20'>
         <div className='p-10 flex gap-10 rounded-lg h-[70vh] justify-center items-center flex-col bg-slate-50'>

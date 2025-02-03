@@ -24,7 +24,7 @@ const createSessionClient = (session) => {
   const client = new Client()
     .setEndpoint(config.endpoint)
     .setProject(config.projectId)
-    .setKey(config.key);
+
 
   if (session) {
     client.setSession(session);
@@ -36,6 +36,9 @@ const createSessionClient = (session) => {
     },
     get databases() {
       return new Databases(client);
+    },
+    get storage() {
+      return new Storage(client);
     },
   };
 };

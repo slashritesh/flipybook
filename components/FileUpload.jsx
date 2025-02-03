@@ -48,10 +48,8 @@ export default function FileUpload() {
       if (response.ok) {
         setUploadStatus("success");
 
-        console.log("workinggggg");
+        router.push("/dashboard/projects");
       }
-
-      router.push("/preview");
     } catch (error) {
       console.error("Upload error:", error);
     }

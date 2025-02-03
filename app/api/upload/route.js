@@ -2,11 +2,15 @@ import { NextResponse } from "next/server";
 import { ID } from "node-appwrite";
 import { createAdminClient } from "@/config/appwrite";
 import { appwrite } from "@/config";
+import { getFileUrl } from "@/lib/utils";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export async function POST(req) {
   try {
-    const { storage } = createAdminClient();
+    const { storage ,databases} = createAdminClient();
     const { buckets } = appwrite;
+    const {getUser} = await getKindeServerSession()
+    const user = await getUser()
 
     // Read file from request
     const data = await req.formData();
@@ -18,13 +22,25 @@ export async function POST(req) {
 
     // Upload file to Appwrite storage
     const response = await storage.createFile(buckets.pdfs, ID.unique(), file);
+    const fileUrl = getFileUrl(buckets.pdfs,response.$id)
 
-    const url = await storage.getFilePreview(buckets.pdfs,response.$id)
+    // create project in backend
+    const newProject = await databases.createDocument(
+      appwrite.databaseID,
+      appwrite.collectionID,
+      ID.unique(),
+      {
+        userid : user.id,
+        filename: response.name,
+        fileid: response.$id,
+        fileurl: fileUrl,
+      }
+    );
 
-    console.log("file url : ",url.byteLength);
+    console.log(newProject);
     
 
-    console.log("File uploaded successfully:", response);
+    
     return NextResponse.json(
       { message: "File uploaded successfully", fileId: response.$id },
       { status: 200 }
