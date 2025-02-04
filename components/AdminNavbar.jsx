@@ -20,7 +20,7 @@ const AdminNavbar = async () => {
   }
 
   return (
-    <header className="mx-20 py-5 items-center flex justify-between">
+    <header className="mx-10 py-5 items-center flex justify-between">
       <div>
         <Logo />
       </div>

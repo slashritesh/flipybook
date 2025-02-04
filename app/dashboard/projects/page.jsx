@@ -6,7 +6,7 @@ import React from "react";
 
 const Projects = async () => {
   const { documents: projects } = await getAllProjects();
-  
+
   return (
     <main className="mx-20">
       <h2 className="text-xl mb-5">All Projects</h2>
@@ -28,7 +28,10 @@ const Projects = async () => {
                 <Link className={buttonVariants()} href={project.fileurl}>
                   Preview
                 </Link>
-                <Link className={buttonVariants()} href={`/dashboard/projects/${project.fileid}/preview`}>
+                <Link
+                  className={buttonVariants()}
+                  href={`/dashboard/projects/${project.fileid}/edit`}
+                >
                   Open FlipBook
                 </Link>
               </div>

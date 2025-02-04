@@ -15,7 +15,7 @@ const Navbar = () => {
   const { isAuthenticated } = useKindeBrowserClient();
 
   return (
-    <div className="mx-20 py-5 flex items-center justify-between">
+    <div className="mx-10 py-5 flex items-center justify-between">
       <Logo />
       <div>
         {isAuthenticated ? (

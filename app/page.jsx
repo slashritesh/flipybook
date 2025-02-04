@@ -12,6 +12,8 @@ const page = () => {
           <FileUpload />
         </div>
       </section>
+      <link rel='import' src="https://flipybook.vercel.app/share/67a1b807002252cc5061" ></link>
+      <embed height={500} width={800} src="https://flipybook.vercel.app/share/67a1b807002252cc5061" type="" />
     </main>
   )
 }
