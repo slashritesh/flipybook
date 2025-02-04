@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import React, { useState, useEffect, useRef } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -35,7 +35,7 @@ export default function MyBook({fileUrl}) {
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [window.innerWidth]);
+  }, []);
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
@@ -46,7 +46,7 @@ export default function MyBook({fileUrl}) {
   };
 
   return (
-      <div className="">
+      <div className="overflow-hidden border">
         <Document
           file={fileUrl}
           onLoadSuccess={onDocumentLoadSuccess}

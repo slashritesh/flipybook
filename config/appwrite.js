@@ -20,15 +20,11 @@ const createAdminClient = () => {
   };
 };
 
-const createSessionClient = (session) => {
+const createClientSideClient = () => {
   const client = new Client()
     .setEndpoint(config.endpoint)
     .setProject(config.projectId)
 
-
-  if (session) {
-    client.setSession(session);
-  }
 
   return {
     get account() {
@@ -45,5 +41,4 @@ const createSessionClient = (session) => {
 
 
 
-
-export { createAdminClient, createSessionClient };
+export { createAdminClient ,createClientSideClient};
