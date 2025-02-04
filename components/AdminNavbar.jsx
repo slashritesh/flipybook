@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   getKindeServerSession,
@@ -6,10 +7,15 @@ import {
 import { Button } from "./ui/button";
 import Image from "next/image";
 import Logo from "./ui/Logo";
+import { redirect } from "next/navigation";
 
 const AdminNavbar = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
+
+  if (!user) {
+    redirect("/")
+  }
 
   return (
     <header className="mx-20 py-5 items-center flex justify-between">
@@ -28,13 +34,14 @@ const AdminNavbar = async () => {
 };
 
 const UserComp = ({ user }) => {
+  
   return (
     <>
       <div>
         <Image
           className="rounded-full"
           height={40}
-          alt={user.email}
+          alt={'user'}
           width={40}
           src={user.picture}
         />

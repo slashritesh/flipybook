@@ -20,7 +20,7 @@ const Pages = React.forwardRef(({ pageNumber }, ref) => {
 
 Pages.displayName = "Pages";
 
-export default function MyBook() {
+export default function MyBook({fileUrl}) {
   const [numPages, setNumPages] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
@@ -49,7 +49,7 @@ export default function MyBook() {
     <div className="flex justify-center items-center h-screen my-20 p-2 sm:p-4 overflow-hidden">
       <div className="relative border h-fit flex justify-center ">
         <Document
-          file="/pdf/demo.pdf"
+          file={fileUrl}
           onLoadSuccess={onDocumentLoadSuccess}
           loading={
             <div className="flex justify-center items-center h-96">

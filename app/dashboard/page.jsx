@@ -1,4 +1,3 @@
-import { getAllProjects } from '@/actions/projects'
 import FileUpload from '@/components/FileUpload'
 import React from 'react'
 

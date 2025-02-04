@@ -7,66 +7,41 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-const Pages = React.forwardRef(({ pageNumber }, ref) => {
+const Pages = React.forwardRef(({ pageNumber, pageSize }, ref) => {
   return (
-    <div
-      ref={ref}
-      className="relative bg-white shadow-md"
-      style={{
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Page
-        pageNumber={pageNumber}
-        className=""
-        renderTextLayer={true}
-        renderAnnotationLayer={true}
-      />
+    <div ref={ref} className="relative flex items-center bg-white shadow-md">
+      <Page pageNumber={pageNumber} width={pageSize.width} />
     </div>
   );
 });
 
 Pages.displayName = "Pages";
 
-export default function MyBook() {
+export default function MyBook({ fileUrl }) {
   const [numPages, setNumPages] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const [pageSize, setPageSize] = useState({ width: 400, height: 518 }); // Default size
   const bookRef = useRef();
-  const containerRef = useRef();
 
   useEffect(() => {
-    const updateDimensions = () => {
-      const isMobileView = window.innerWidth < 768;
-      setIsMobile(isMobileView);
-
-      if (containerRef.current) {
-        const container = containerRef.current;
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
-
-        // Calculate dimensions based on container size and device
-        const width = isMobileView
-          ? containerWidth * 0.9
-          : containerWidth * 0.45;
-        const height = Math.min(containerHeight * 0.8, width * 1.4); // Maintain aspect ratio
-
-        setDimensions({ width, height });
-      }
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 668);
     };
 
-    updateDimensions();
-    window.addEventListener("resize", updateDimensions);
-
-    return () => window.removeEventListener("resize", updateDimensions);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  function onDocumentLoadSuccess({ numPages }) {
+  function onDocumentLoadSuccess({ numPages, getPage }) {
     setNumPages(numPages);
+
+    // Get the first page's size dynamically
+    getPage(1).then((page) => {
+      const viewport = page.getViewport({ scale: 1 });
+      setPageSize({ width: viewport.width, height: viewport.height });
+    });
   }
 
   const handlePageFlip = (e) => {
@@ -74,13 +49,10 @@ export default function MyBook() {
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="flex justify-center overflow-hidden items-center h-full w-full bg-gray-100 p-4 md:p-8"
-    >
-      <div className="relative w-full h-full">
+    <div className="flex justify-center items-center h-screen my-20 p-2 sm:p-4 overflow-hidden">
+      <div className="relative border h-fit flex justify-center">
         <Document
-          file="demo2.pdf"
+          file={fileUrl}
           onLoadSuccess={onDocumentLoadSuccess}
           loading={
             <div className="flex justify-center items-center h-96">
@@ -88,15 +60,19 @@ export default function MyBook() {
             </div>
           }
         >
-          {numPages && dimensions.width > 0 && (
+          {numPages && (
             <HTMLFlipBook
               ref={bookRef}
-              width={650}
-              height={800}
+              width={pageSize.width}
+              height={pageSize.height}
               size="stretch"
+              minWidth={pageSize.width * 0.8}
+              maxWidth={pageSize.width * 1.2}
+              minHeight={pageSize.height * 0.8}
+              maxHeight={pageSize.height * 1.2}
               showCover={false}
               flippingTime={1000}
-              className="shadow-2xl bg-red-500 w-full h-full"
+              className="shadow-2xl bg-red-200"
               startPage={0}
               drawShadow={true}
               usePortrait={isMobile}
@@ -105,20 +81,12 @@ export default function MyBook() {
               mobileScrollSupport={true}
               onFlip={handlePageFlip}
             >
-              {Array.from(new Array(numPages), (el, index) => (
-                <Pages key={index} pageNumber={index + 1} />
+              {Array.from(new Array(numPages), (_, index) => (
+                <Pages key={index} pageNumber={index + 1} pageSize={pageSize} />
               ))}
             </HTMLFlipBook>
           )}
         </Document>
-
-        {numPages && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/80 px-4 py-2 rounded-full shadow-md">
-            <p className="text-gray-700">
-              Page {currentPage + 1} of {numPages}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
