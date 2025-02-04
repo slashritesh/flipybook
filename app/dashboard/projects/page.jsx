@@ -6,7 +6,7 @@ import React from "react";
 
 const Projects = async () => {
   const { documents: projects } = await getAllProjects();
-  console.log(projects);
+  
   return (
     <main className="mx-20">
       <h2 className="text-xl mb-5">All Projects</h2>

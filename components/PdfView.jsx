@@ -8,11 +8,11 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const PAGE_WIDTH = 400; // Ensure this matches FlipBook width
-const PAGE_HEIGHT = 518; // Adjust for proper aspect ratio
+const PAGE_HEIGHT = 550; // Adjust for proper aspect ratio
 
 const Pages = React.forwardRef(({ pageNumber }, ref) => {
   return (
-    <div ref={ref} className="relative flex items-center bg-white shadow-md ">
+    <div ref={ref} className="relative border flex items-center bg-white shadow-md ">
       <Page pageNumber={pageNumber} width={PAGE_WIDTH} />
     </div>
   );
@@ -46,8 +46,7 @@ export default function MyBook({fileUrl}) {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen my-20 p-2 sm:p-4 overflow-hidden">
-      <div className="relative border h-fit flex justify-center ">
+      <div className="">
         <Document
           file={fileUrl}
           onLoadSuccess={onDocumentLoadSuccess}
@@ -93,6 +92,6 @@ export default function MyBook({fileUrl}) {
           </div>
         )} */}
       </div>
-    </div>
+    
   );
 }

@@ -4,10 +4,12 @@ import {
   getKindeServerSession,
   LogoutLink,
 } from "@kinde-oss/kinde-auth-nextjs/server";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import Image from "next/image";
 import Logo from "./ui/Logo";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const AdminNavbar = async () => {
   const { getUser } = getKindeServerSession();
@@ -24,6 +26,9 @@ const AdminNavbar = async () => {
       </div>
       <div></div>
       <div className="flex items-center gap-5">
+        <Link href={'/dashboard/projects'} className={cn(buttonVariants({variant:"ghost"}))} >
+        All Projects
+        </Link>
         <LogoutLink>
           <Button>Log Out</Button>
         </LogoutLink>
