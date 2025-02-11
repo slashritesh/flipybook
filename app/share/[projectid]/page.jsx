@@ -44,8 +44,7 @@ const page = () => {
 
   const url = getFileUrl(buckets.pdfs, fileid);
   return (
-    <div className="h-screen bg-slate-900 w-full">
-      <div className="p-2 relative">
+    <div className="h-screen relative bg-slate-900 flex-col flex items-center justify-center w-full">
         <div className="flex flex-col p-5 absolute top-0 gap-2 right-0">
           <TooltipProvider>
             <Tooltip>
@@ -57,20 +56,12 @@ const page = () => {
                 <p>Download pdf</p>
               </TooltipContent>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger
-              className="bg-slate-800 rounded-md text-white p-2"
-              onClick={handleDownloadFile}
-              ><Code size={20} /></TooltipTrigger>
-
-              <TooltipContent className='bg-white text-black'>
-                <p>Embed Code</p>
-              </TooltipContent>
-            </Tooltip>
+            
           </TooltipProvider>
 
           
         </div>
+      <div className="p-2 relative">
       </div>
       <div className="overflow-hidden flex-col flex items-center justify-center">
         <MyBook fileUrl={url} />
