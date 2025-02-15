@@ -5,11 +5,18 @@ import Link from "next/link";
 import React from "react";
 
 const Projects = async () => {
-  const { documents: projects } = await getAllProjects();
+  const { documents: projects } = await getAllProjects(); 
 
   return (
-    <main className="mx-20">
-      <h2 className="text-xl mb-5">All Projects</h2>
+    <main className="mx-10">
+      {
+        projects.length >= 0 && (
+          <div className="h-[80vh] flex justify-center items-center border-2 border-dotted rounded-xl flex-col bg-slate-50">
+            <h1>No Projects Upload Yet</h1>
+            <Link href={'/dashboard'} className={buttonVariants()}>Create One</Link>
+          </div>
+        )
+      }
       <div className="grid gap-6 grid-cols-3">
         {projects.map((project) => {
           return (
